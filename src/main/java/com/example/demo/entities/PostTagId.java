@@ -8,13 +8,13 @@ import java.util.Objects;
 @Embeddable
 public class PostTagId implements Serializable {
 
-  @Column(name = "post_id")
+  @Column(name = "post_id", nullable = false)
   private Long postId;
 
-  @Column(name = "tag_id")
+  @Column(name = "tag_id", nullable = false)
   private Long tagId;
 
-  private PostTagId() {
+  public PostTagId() {
   }
 
   public PostTagId(
@@ -25,20 +25,21 @@ public class PostTagId implements Serializable {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-
-    if (o == null || getClass() != o.getClass())
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o instanceof final PostTagId other) {
+      return Objects.equals(getPostId(), other.getPostId()) &&
+          Objects.equals(getTagId(), other.getTagId());
+    } else {
       return false;
-
-    PostTagId that = (PostTagId) o;
-    return Objects.equals(postId, that.postId) &&
-        Objects.equals(tagId, that.tagId);
+    }
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(postId, tagId);
+    return Objects.hash(getPostId(), getTagId());
   }
 
   public Long getPostId() {

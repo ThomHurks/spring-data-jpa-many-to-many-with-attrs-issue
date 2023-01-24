@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.Table;
@@ -19,16 +20,18 @@ public class PostTag {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @MapsId("postId")
+  @JoinColumn(name = "post_id", nullable = false)
   private Post post;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @MapsId("tagId")
+  @JoinColumn(name = "tag_id", nullable = false)
   private Tag tag;
 
   @Column(name = "created_on")
   private Instant createdOn = Instant.now();
 
-  private PostTag() {
+  public PostTag() {
   }
 
   public PostTag(Post post, Tag tag) {
@@ -39,19 +42,20 @@ public class PostTag {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-
-    if (o == null || getClass() != o.getClass())
+    if (this == o) {
+      return true;
+    }
+    if (o instanceof final PostTag other) {
+      return Objects.equals(getPost(), other.getPost()) &&
+          Objects.equals(getTag(), other.getTag());
+    } else {
       return false;
-
-    PostTag that = (PostTag) o;
-    return Objects.equals(post, that.post) &&
-        Objects.equals(tag, that.tag);
+    }
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(post, tag);
+    return Objects.hash(getPost(), getTag());
   }
 
   public PostTagId getId() {

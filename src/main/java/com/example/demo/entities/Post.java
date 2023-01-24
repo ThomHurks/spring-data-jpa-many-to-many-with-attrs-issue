@@ -1,14 +1,18 @@
 package com.example.demo.entities;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.ArrayList;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity(name = "Post")
 @Table(name = "post")
@@ -18,6 +22,7 @@ public class Post {
   @GeneratedValue
   private Long id;
 
+  @Column(nullable = false)
   private String title;
 
   @OneToMany(
@@ -25,7 +30,7 @@ public class Post {
       cascade = CascadeType.ALL,
       orphanRemoval = true
   )
-  private List<PostTag> tags = new ArrayList<>();
+  private Set<PostTag> tags = new HashSet<>();
 
   public Post() {
   }
@@ -34,14 +39,14 @@ public class Post {
     this.title = title;
   }
 
-  public void addTag(Tag tag) {
+  public void addTag(final @NotNull @Valid Tag tag) {
     PostTag postTag = new PostTag(this, tag);
     tags.add(postTag);
     tag.getPosts()
        .add(postTag);
   }
 
-  public void removeTag(Tag tag) {
+  public void removeTag(final @NotNull @Valid Tag tag) {
     for (Iterator<PostTag> iterator = tags.iterator();
          iterator.hasNext(); ) {
       PostTag postTag = iterator.next();
@@ -61,15 +66,20 @@ public class Post {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof Post)) return false;
-    return id != null && id.equals(((Post) o).getId());
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o instanceof final Post other) {
+      return Objects.equals(getId(), other.getId());
+    } else {
+      return false;
+    }
   }
 
   @Override
   public int hashCode() {
-    return getClass().hashCode();
+    return Objects.hash(getId());
   }
 
   public Long getId() {
@@ -88,11 +98,11 @@ public class Post {
     this.title = title;
   }
 
-  public List<PostTag> getTags() {
+  public Set<PostTag> getTags() {
     return tags;
   }
 
-  public void setTags(List<PostTag> tags) {
+  public void setTags(Set<PostTag> tags) {
     this.tags = tags;
   }
 }

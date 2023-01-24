@@ -3,14 +3,15 @@ package com.example.demo.entities;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity(name = "Tag")
 @Table(name = "tag")
@@ -21,6 +22,7 @@ public class Tag {
   private Long id;
 
   @NaturalId
+  @Column(unique = true, nullable = false)
   private String name;
 
   @OneToMany(
@@ -28,7 +30,7 @@ public class Tag {
       cascade = CascadeType.ALL,
       orphanRemoval = true
   )
-  private List<PostTag> posts = new ArrayList<>();
+  private Set<PostTag> posts = new HashSet<>();
 
   public Tag() {
   }
@@ -38,16 +40,20 @@ public class Tag {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Tag tag = (Tag) o;
-    return Objects.equals(name, tag.name);
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o instanceof final Tag other) {
+      return Objects.equals(getName(), other.getName());
+    } else {
+      return false;
+    }
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name);
+    return Objects.hash(getName());
   }
 
   public Long getId() {
@@ -66,11 +72,11 @@ public class Tag {
     this.name = name;
   }
 
-  public List<PostTag> getPosts() {
+  public Set<PostTag> getPosts() {
     return posts;
   }
 
-  public void setPosts(List<PostTag> posts) {
+  public void setPosts(Set<PostTag> posts) {
     this.posts = posts;
   }
 }
